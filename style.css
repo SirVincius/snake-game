@@ -5,11 +5,11 @@
 }
 
 .cell {
-  background-color: red;
-  border: 1px solid white;
+  background-color: white;
+  border: 1px solid grey;
   box-sizing: border-box;
 }
 
 .dot {
-  background-color: grey;
+  background-color: black;
 }

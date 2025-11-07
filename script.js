@@ -4,16 +4,17 @@ class Snake {
     this.speed = 1;
     posX > 19 ? (this.direction = "left") : (this.direction = "right");
   }
+
+  head() {
+    return this.body[0];
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   generateGrid();
   var snake = createSnake();
   changeDirection(snake);
-
-  setInterval(() => {
-    console.log("0.5 seconds");
-  }, 500);
+  move(snake);
 });
 
 function generateGrid() {
@@ -22,8 +23,8 @@ function generateGrid() {
     for (let j = 0; j <= 39; j++) {
       let e = document.createElement("div");
       e.classList.add("cell");
-      e.setAttribute("posX", i);
-      e.setAttribute("posY", j);
+      e.setAttribute("posY", i);
+      e.setAttribute("posX", j);
       mainGrid.append(e);
     }
   }
@@ -39,8 +40,8 @@ function createSnake() {
 
   for (const cell of gridCells) {
     if (
-      cell.getAttribute("posX") == snake.body[0].x &&
-      cell.getAttribute("posY") == snake.body[0].y
+      cell.getAttribute("posX") == snake.head().x &&
+      cell.getAttribute("posY") == snake.head().y
     ) {
       console.log("Snake created");
       cell.classList.add("dot");
@@ -78,4 +79,40 @@ function changeDirection(snake) {
     }
     console.log(snake);
   });
+}
+
+function findGridCell(posX, posY) {
+  let gridCells = getGridCells();
+  for (const cell of gridCells) {
+    if (
+      parseInt(cell.getAttribute("posX")) === posX &&
+      parseInt(cell.getAttribute("posY")) === posY
+    ) {
+      return cell;
+    }
+  }
+  return null;
+}
+
+function snakeTransition(snake, shiftX, shiftY) {
+  let currentCell = findGridCell(snake.head().x, snake.head().y);
+  currentCell.classList.remove("dot");
+  snake.head().x += shiftX;
+  snake.head().y += shiftY;
+  let nextCell = findGridCell(snake.head().x, snake.head().y);
+  nextCell.classList.add("dot");
+}
+
+function move(snake) {
+  setInterval(() => {
+    if (snake.direction == "right" && snake.head().x < 39) {
+      snakeTransition(snake, 1, 0);
+    } else if (snake.direction == "up" && snake.head().y > 0) {
+      snakeTransition(snake, 0, -1);
+    } else if (snake.direction == "left" && snake.head().x > 0) {
+      snakeTransition(snake, -1, 0);
+    } else if (snake.direction == "down" && snake.head().y < 39) {
+      snakeTransition(snake, 0, 1);
+    }
+  }, 100);
 }
