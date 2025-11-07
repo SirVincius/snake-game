@@ -1,12 +1,18 @@
-var mainGrid = document.querySelector("#main-grid");
-var cells;
+class Snake {
+  constructor(posX, posY) {
+    this.body = [{ x: posX, y: posY }];
+    this.speed = 1;
+    posX > 19 ? (this.direction = "left") : (this.direction = "right");
+  }
+}
 
 document.addEventListener("DOMContentLoaded", function () {
   generateGrid();
-  setStartingPoint();
+  var snake = createSnake();
 });
 
 function generateGrid() {
+  let mainGrid = getMainGrid();
   for (let i = 0; i <= 39; i++) {
     for (let j = 0; j <= 39; j++) {
       let e = document.createElement("div");
@@ -16,19 +22,22 @@ function generateGrid() {
       mainGrid.append(e);
     }
   }
-  cells = document.querySelectorAll(".cell");
 }
 
-function setStartingPoint() {
-  let randomX = Math.floor(Math.random() * 40 + 1);
-  let randomY = Math.floor(Math.random() * 40 + 1);
-  console.log(`${randomX}, ${randomY}`);
+function createSnake() {
+  let randomX = Math.floor(Math.random() * 40);
+  let randomY = Math.floor(Math.random() * 40);
 
-  for (const cell of cells) {
+  let snake = new Snake(randomX, randomY);
+
+  let gridCells = getGridCells();
+
+  for (const cell of gridCells) {
     if (
-      cell.getAttribute("posX") == randomX &&
-      cell.getAttribute("posY") == randomY
+      cell.getAttribute("posX") == snake.body[0].x &&
+      cell.getAttribute("posY") == snake.body[0].y
     ) {
+      console.log("Snake created");
       cell.classList.add("dot");
     }
   }
@@ -39,3 +48,11 @@ document.addEventListener("keydown", function (e) {
   if (e.key == "q") {
   }
 });
+
+function getMainGrid() {
+  return document.querySelector("#main-grid");
+}
+
+function getGridCells() {
+  return document.querySelectorAll(".cell");
+}
