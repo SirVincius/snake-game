@@ -9,6 +9,11 @@ class Snake {
 document.addEventListener("DOMContentLoaded", function () {
   generateGrid();
   var snake = createSnake();
+  changeDirection(snake);
+
+  setInterval(() => {
+    console.log("0.5 seconds");
+  }, 500);
 });
 
 function generateGrid() {
@@ -41,6 +46,7 @@ function createSnake() {
       cell.classList.add("dot");
     }
   }
+  return snake;
 }
 
 document.addEventListener("keydown", function (e) {
@@ -55,4 +61,21 @@ function getMainGrid() {
 
 function getGridCells() {
   return document.querySelectorAll(".cell");
+}
+
+function moveSnake() {}
+
+function changeDirection(snake) {
+  document.addEventListener("keypress", (event) => {
+    if (event.key == "w") {
+      snake.direction = "up";
+    } else if (event.key == "s") {
+      snake.direction = "down";
+    } else if (event.key == "a") {
+      snake.direction = "left";
+    } else if (event.key == "d") {
+      snake.direction = "right";
+    }
+    console.log(snake);
+  });
 }
