@@ -2,29 +2,34 @@ class Snake {
   constructor(posX, posY) {
     this.body = [{ x: posX, y: posY }];
     this.speed = 1;
-    posX > 19 ? (this.direction = "left") : (this.direction = "right");
+    this.direction = posX > 19 ? "left" : "right";
   }
 
   head() {
     return this.body[0];
   }
+
+  tail() {
+    return this.body[this.body.length - 1];
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   generateGrid();
-  var snake = createSnake();
+  let snake = createSnake();
+  generateFood(snake);
   changeDirection(snake);
   move(snake);
 });
 
 function generateGrid() {
   let mainGrid = getMainGrid();
-  for (let i = 0; i <= 39; i++) {
-    for (let j = 0; j <= 39; j++) {
+  for (let y = 0; y < 40; y++) {
+    for (let x = 0; x < 40; x++) {
       let e = document.createElement("div");
       e.classList.add("cell");
-      e.setAttribute("posY", i);
-      e.setAttribute("posX", j);
+      e.setAttribute("posY", y);
+      e.setAttribute("posX", x);
       mainGrid.append(e);
     }
   }
@@ -36,25 +41,9 @@ function createSnake() {
 
   let snake = new Snake(randomX, randomY);
 
-  let gridCells = getGridCells();
-
-  for (const cell of gridCells) {
-    if (
-      cell.getAttribute("posX") == snake.head().x &&
-      cell.getAttribute("posY") == snake.head().y
-    ) {
-      console.log("Snake created");
-      cell.classList.add("dot");
-    }
-  }
+  findGridCell(randomX, randomY).classList.add("head");
   return snake;
 }
-
-document.addEventListener("keydown", function (e) {
-  var head = document.getElementsByClassName("dot");
-  if (e.key == "q") {
-  }
-});
 
 function getMainGrid() {
   return document.querySelector("#main-grid");
@@ -64,55 +53,101 @@ function getGridCells() {
   return document.querySelectorAll(".cell");
 }
 
-function moveSnake() {}
-
 function changeDirection(snake) {
-  document.addEventListener("keypress", (event) => {
-    if (event.key == "w") {
-      snake.direction = "up";
-    } else if (event.key == "s") {
-      snake.direction = "down";
-    } else if (event.key == "a") {
-      snake.direction = "left";
-    } else if (event.key == "d") {
-      snake.direction = "right";
-    }
-    console.log(snake);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "w") snake.direction = "up";
+    else if (event.key === "s") snake.direction = "down";
+    else if (event.key === "a") snake.direction = "left";
+    else if (event.key === "d") snake.direction = "right";
   });
 }
 
 function findGridCell(posX, posY) {
-  let gridCells = getGridCells();
-  for (const cell of gridCells) {
-    if (
-      parseInt(cell.getAttribute("posX")) === posX &&
-      parseInt(cell.getAttribute("posY")) === posY
-    ) {
-      return cell;
-    }
-  }
-  return null;
+  return document.querySelector(`[posX="${posX}"][posY="${posY}"]`);
 }
 
-function snakeTransition(snake, shiftX, shiftY) {
-  let currentCell = findGridCell(snake.head().x, snake.head().y);
-  currentCell.classList.remove("dot");
-  snake.head().x += shiftX;
-  snake.head().y += shiftY;
-  let nextCell = findGridCell(snake.head().x, snake.head().y);
-  nextCell.classList.add("dot");
+function eats(snake) {
+  let cell = findGridCell(snake.head().x, snake.head().y);
+  return cell && cell.classList.contains("food");
+}
+
+function getAllCells() {
+  let allCells = [];
+  for (let y = 0; y < 40; y++) {
+    for (let x = 0; x < 40; x++) {
+      allCells.push({ x, y });
+    }
+  }
+  return allCells;
+}
+
+function generateFood(snake) {
+  let allCells = getAllCells();
+  const availableCells = allCells.filter(
+    (c) => !snake.body.some((b) => b.x === c.x && b.y === c.y)
+  );
+  const foodCell =
+    availableCells[Math.floor(Math.random() * availableCells.length)];
+  findGridCell(foodCell.x, foodCell.y).classList.add("food");
+}
+
+function findFood() {
+  return document.querySelector(".food");
+}
+
+function consummeFood() {
+  let food = findFood();
+  if (food) food.classList.remove("food");
+}
+
+function growSnake(snake) {
+  let tail = snake.tail();
+  snake.body.push({ x: tail.x, y: tail.y });
+}
+
+function drawSnake(snake) {
+  document.querySelectorAll(".head, .body-segment").forEach((cell) => {
+    cell.classList.remove("head", "body-segment");
+  });
+
+  snake.body.forEach((segment, index) => {
+    let cell = findGridCell(segment.x, segment.y);
+    if (cell) {
+      cell.classList.add(index === 0 ? "head" : "body-segment");
+    }
+  });
+}
+
+function updateSnakePosition(snake) {
+  let dx = 0,
+    dy = 0;
+
+  if (snake.direction === "right") dx = 1;
+  else if (snake.direction === "left") dx = -1;
+  else if (snake.direction === "up") dy = -1;
+  else if (snake.direction === "down") dy = 1;
+
+  const newHead = {
+    x: (snake.head().x + dx + 40) % 40,
+    y: (snake.head().y + dy + 40) % 40,
+  };
+
+  for (let i = snake.body.length - 1; i > 0; i--) {
+    snake.body[i] = { ...snake.body[i - 1] };
+  }
+  snake.body[0] = newHead;
 }
 
 function move(snake) {
   setInterval(() => {
-    if (snake.direction == "right" && snake.head().x < 39) {
-      snakeTransition(snake, 1, 0);
-    } else if (snake.direction == "up" && snake.head().y > 0) {
-      snakeTransition(snake, 0, -1);
-    } else if (snake.direction == "left" && snake.head().x > 0) {
-      snakeTransition(snake, -1, 0);
-    } else if (snake.direction == "down" && snake.head().y < 39) {
-      snakeTransition(snake, 0, 1);
+    updateSnakePosition(snake);
+
+    if (eats(snake)) {
+      consummeFood();
+      growSnake(snake);
+      generateFood(snake);
     }
+
+    drawSnake(snake);
   }, 100);
 }

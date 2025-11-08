@@ -10,6 +10,14 @@
   box-sizing: border-box;
 }
 
-.dot {
+.head {
   background-color: black;
+}
+
+.body-segment {
+  background-color: rgb(27, 27, 27);
+}
+
+.food {
+  background-color: grey;
 }
