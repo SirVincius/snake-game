@@ -1,7 +1,11 @@
+var INITIAL_SPEED = 200;
+var MAX_SPEED = 400;
+var MIN_SPEED = 10;
+
 class Snake {
   constructor(posX, posY) {
     this.body = [{ x: posX, y: posY }];
-    this.speed = 1;
+    this.speed = INITIAL_SPEED;
     this.direction = posX > 19 ? "left" : "right";
   }
 
@@ -12,14 +16,22 @@ class Snake {
   tail() {
     return this.body[this.body.length - 1];
   }
+
+  setSpeed(speedModifier) {
+    this.speed += speedModifier;
+    if (this.speed < MIN_SPEED) this.speed = MIN_SPEED;
+    if (this.speed > MAX_SPEED) this.speed = MAX_SPEED;
+  }
 }
+
+var snake;
 
 document.addEventListener("DOMContentLoaded", function () {
   generateGrid();
-  let snake = createSnake();
-  generateFood(snake);
-  changeDirection(snake);
-  move(snake);
+  snake = createSnake();
+  generateFood();
+  changeDirection();
+  move();
 });
 
 function generateGrid() {
@@ -53,12 +65,19 @@ function getGridCells() {
   return document.querySelectorAll(".cell");
 }
 
-function changeDirection(snake) {
+function changeDirection() {
   document.addEventListener("keydown", (event) => {
     if (event.key === "w") snake.direction = "up";
     else if (event.key === "s") snake.direction = "down";
     else if (event.key === "a") snake.direction = "left";
     else if (event.key === "d") snake.direction = "right";
+    else if (event.key === "t") {
+      snake.setSpeed(10);
+      console.log(snake.speed);
+    } else if (event.key === "y") {
+      snake.setSpeed(-10);
+      console.log(snake.speed);
+    }
   });
 }
 
@@ -66,7 +85,7 @@ function findGridCell(posX, posY) {
   return document.querySelector(`[posX="${posX}"][posY="${posY}"]`);
 }
 
-function eats(snake) {
+function eats() {
   let cell = findGridCell(snake.head().x, snake.head().y);
   return cell && cell.classList.contains("food");
 }
@@ -81,14 +100,13 @@ function getAllCells() {
   return allCells;
 }
 
-function generateFood(snake) {
-  let allCells = getAllCells();
-  const availableCells = allCells.filter(
-    (c) => !snake.body.some((b) => b.x === c.x && b.y === c.y)
+function generateFood() {
+  const availableCells = document.querySelectorAll(
+    ".cell:not(.body-segment):not(.head):not(.food)"
   );
   const foodCell =
     availableCells[Math.floor(Math.random() * availableCells.length)];
-  findGridCell(foodCell.x, foodCell.y).classList.add("food");
+  foodCell.classList.add("food");
 }
 
 function findFood() {
@@ -96,16 +114,16 @@ function findFood() {
 }
 
 function consummeFood() {
-  let food = findFood();
-  if (food) food.classList.remove("food");
+  let food = findGridCell(snake.head().x, snake.head().y);
+  food.classList.remove("food");
 }
 
-function growSnake(snake) {
+function growSnake() {
   let tail = snake.tail();
   snake.body.push({ x: tail.x, y: tail.y });
 }
 
-function drawSnake(snake) {
+function drawSnake() {
   document.querySelectorAll(".head, .body-segment").forEach((cell) => {
     cell.classList.remove("head", "body-segment");
   });
@@ -118,7 +136,7 @@ function drawSnake(snake) {
   });
 }
 
-function updateSnakePosition(snake) {
+function updateSnakePosition() {
   let dx = 0,
     dy = 0;
 
@@ -138,16 +156,18 @@ function updateSnakePosition(snake) {
   snake.body[0] = newHead;
 }
 
-function move(snake) {
-  setInterval(() => {
-    updateSnakePosition(snake);
+function move() {
+  function moveInternal() {
+    updateSnakePosition();
 
-    if (eats(snake)) {
+    if (eats()) {
       consummeFood();
-      growSnake(snake);
-      generateFood(snake);
+      growSnake();
+      generateFood();
     }
 
-    drawSnake(snake);
-  }, 100);
+    drawSnake();
+    setTimeout(moveInternal, snake.speed);
+  }
+  moveInternal();
 }
