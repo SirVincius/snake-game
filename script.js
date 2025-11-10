@@ -2,6 +2,10 @@ const INITIAL_SPEED = 200;
 const MAX_SPEED = 400;
 const MIN_SPEED = 10;
 const CONSUMMABLE = ["food", "speed-up"];
+var gameOver = false;
+var gameScore = 0;
+var currentFoodValue = 100;
+var foodValueBonus = 100;
 
 class Snake {
   constructor(posX, posY) {
@@ -91,6 +95,12 @@ function getSnakeHeadCellInfos() {
   return cell;
 }
 
+function checkSnakeCollision() {
+  if (getSnakeHeadCellInfos().classList.contains("body-segment")) {
+    gameOver = true;
+  }
+}
+
 function eats() {
   let cell = getSnakeHeadCellInfos();
   return cell && CONSUMMABLE.some((c) => cell.classList.contains(c));
@@ -148,8 +158,24 @@ function checkPowerUp() {
   }
 }
 
+function UpdateScore() {
+  document.getElementById("game-score").innerHTML = `Score : ${gameScore}`;
+}
+
+function reduceBonus() {
+  if (currentFoodValue > 50) {
+    currentFoodValue--;
+  }
+}
+
 function consummeFood() {
   let food = findGridCell(snake.head().x, snake.head().y);
+  if (food.classList.contains("food")) {
+    gameScore += currentFoodValue;
+    foodValueBonus++;
+    currentFoodValue = foodValueBonus;
+    UpdateScore();
+  }
   CONSUMMABLE.forEach((c) => food.classList.remove(c));
 }
 
@@ -194,6 +220,12 @@ function updateSnakePosition() {
 function move() {
   function moveInternal() {
     updateSnakePosition();
+    checkSnakeCollision();
+    reduceBonus();
+
+    if (gameOver) {
+      return;
+    }
 
     if (eats()) {
       checkPowerUp();
