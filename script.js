@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
   generateFood();
   changeDirection();
   move();
+  startScorePenalty();
 });
 
 function generateGrid() {
@@ -60,6 +61,16 @@ function createSnake() {
 
   findGridCell(randomX, randomY).classList.add("head");
   return snake;
+}
+
+function startScorePenalty() {
+  function runScorePenalty() {
+    currentFoodValue--;
+
+    setTimeout(runScorePenalty, 1000);
+  }
+
+  runScorePenalty();
 }
 
 function getMainGrid() {
@@ -221,7 +232,6 @@ function move() {
   function moveInternal() {
     updateSnakePosition();
     checkSnakeCollision();
-    reduceBonus();
 
     if (gameOver) {
       return;
