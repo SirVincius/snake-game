@@ -1,6 +1,7 @@
-var INITIAL_SPEED = 200;
-var MAX_SPEED = 400;
-var MIN_SPEED = 10;
+const INITIAL_SPEED = 200;
+const MAX_SPEED = 400;
+const MIN_SPEED = 10;
+const CONSUMMABLE = ["food", "speed-up"];
 
 class Snake {
   constructor(posX, posY) {
@@ -85,9 +86,14 @@ function findGridCell(posX, posY) {
   return document.querySelector(`[posX="${posX}"][posY="${posY}"]`);
 }
 
-function eats() {
+function getSnakeHeadCellInfos() {
   let cell = findGridCell(snake.head().x, snake.head().y);
-  return cell && cell.classList.contains("food");
+  return cell;
+}
+
+function eats() {
+  let cell = getSnakeHeadCellInfos();
+  return cell && CONSUMMABLE.some((c) => cell.classList.contains(c));
 }
 
 function getAllCells() {
@@ -100,22 +106,51 @@ function getAllCells() {
   return allCells;
 }
 
+function generatePowerUP() {
+  console.log("Attempting power up generation");
+  let rng = Math.random();
+  console.log(rng);
+  if (rng < 0.75) {
+    const availableCells = document.querySelectorAll(
+      ".cell:not(.body-segment):not(.head):not(.food)"
+    );
+    const foodCell =
+      availableCells[Math.floor(Math.random() * availableCells.length)];
+    foodCell.classList.add("speed-up");
+    console.log("power-up generated");
+  }
+}
+
+function getNumberOfFoodCells() {
+  const foodCells = document.querySelectorAll(".food");
+  return foodCells.length;
+}
+
 function generateFood() {
-  const availableCells = document.querySelectorAll(
-    ".cell:not(.body-segment):not(.head):not(.food)"
-  );
-  const foodCell =
-    availableCells[Math.floor(Math.random() * availableCells.length)];
-  foodCell.classList.add("food");
+  if (getNumberOfFoodCells() == 0) {
+    const availableCells = document.querySelectorAll(
+      ".cell:not(.body-segment):not(.head):not(.food)"
+    );
+    const foodCell =
+      availableCells[Math.floor(Math.random() * availableCells.length)];
+    foodCell.classList.add("food");
+  }
 }
 
 function findFood() {
   return document.querySelector(".food");
 }
 
+function checkPowerUp() {
+  let cellToCheck = getSnakeHeadCellInfos();
+  if (cellToCheck.classList.contains("speed-up")) {
+    snake.setSpeed(-10);
+  }
+}
+
 function consummeFood() {
   let food = findGridCell(snake.head().x, snake.head().y);
-  food.classList.remove("food");
+  CONSUMMABLE.forEach((c) => food.classList.remove(c));
 }
 
 function growSnake() {
@@ -161,7 +196,9 @@ function move() {
     updateSnakePosition();
 
     if (eats()) {
+      checkPowerUp();
       consummeFood();
+      generatePowerUP();
       growSnake();
       generateFood();
     }
