@@ -116,18 +116,21 @@ function getAllCells() {
   return allCells;
 }
 
-function generatePowerUP() {
-  console.log("Attempting power up generation");
+function generatePowerUP(powerUpName) {
   let rng = Math.random();
-  console.log(rng);
+
   if (rng < 0.75) {
     const availableCells = document.querySelectorAll(
       ".cell:not(.body-segment):not(.head):not(.food)"
     );
     const foodCell =
       availableCells[Math.floor(Math.random() * availableCells.length)];
-    foodCell.classList.add("speed-up");
-    console.log("power-up generated");
+    foodCell.classList.add(powerUpName);
+
+    //Remove the power up after 10 seconds
+    setTimeout(() => {
+      foodCell.classList.remove(powerUpName);
+    }, 10000);
   }
 }
 
@@ -230,7 +233,7 @@ function move() {
     if (eats()) {
       checkPowerUp();
       consummeFood();
-      generatePowerUP();
+      generatePowerUP("speed-up");
       growSnake();
       generateFood();
     }
