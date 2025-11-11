@@ -91,10 +91,13 @@ function getGridCells() {
 
 function changeDirection() {
   document.addEventListener("keydown", (event) => {
-    if (event.key === "w") snake.direction = "up";
-    else if (event.key === "s") snake.direction = "down";
-    else if (event.key === "a") snake.direction = "left";
-    else if (event.key === "d") snake.direction = "right";
+    if (event.key === "w" && snake.direction !== "down") snake.direction = "up";
+    else if (event.key === "s" && snake.direction !== "up")
+      snake.direction = "down";
+    else if (event.key === "a" && snake.direction !== "right")
+      snake.direction = "left";
+    else if (event.key === "d" && snake.direction !== "left")
+      snake.direction = "right";
     else if (event.key === "t") {
       snake.setSpeed(5);
       console.log(snake.speed);
