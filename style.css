@@ -4,8 +4,8 @@
 
 .grid {
   display: grid;
-  grid-template-rows: repeat(40, 20px);
-  grid-template-columns: repeat(40, 20px);
+  grid-template-rows: repeat(30, 20px);
+  grid-template-columns: repeat(30, 20px);
   border: 1px solid black;
   width: fit-content;
 }
@@ -43,4 +43,12 @@
 
 .bonus-points {
   background: linear-gradient(to bottom, blue, rgb(0, 0, 177));
+}
+
+#start-button {
+  height: 100px;
+}
+
+#game-score {
+  font-size: 3rem;
 }

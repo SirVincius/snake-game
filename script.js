@@ -2,6 +2,7 @@ const INITIAL_SPEED = 100;
 const MAX_SPEED = 400;
 const MIN_SPEED = 10;
 const BASE_FOOD_VALUE_MULTIPLIER = 3;
+const GRID_SIDE_DIMENSION = 30;
 const POWER_UP_LIST = [
   "speed-up",
   "speed-down",
@@ -59,8 +60,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function generateGrid() {
   let mainGrid = getMainGrid();
-  for (let y = 0; y < 40; y++) {
-    for (let x = 0; x < 40; x++) {
+  for (let y = 0; y < GRID_SIDE_DIMENSION; y++) {
+    for (let x = 0; x < GRID_SIDE_DIMENSION; x++) {
       let e = document.createElement("div");
       e.classList.add("cell");
       e.setAttribute("posY", y);
@@ -71,8 +72,8 @@ function generateGrid() {
 }
 
 function createSnake() {
-  let randomX = Math.floor(Math.random() * 40);
-  let randomY = Math.floor(Math.random() * 40);
+  let randomX = Math.floor(Math.random() * GRID_SIDE_DIMENSION);
+  let randomY = Math.floor(Math.random() * GRID_SIDE_DIMENSION);
 
   let snake = new Snake(randomX, randomY);
 
@@ -142,8 +143,8 @@ function eats() {
 
 function getAllCells() {
   let allCells = [];
-  for (let y = 0; y < 40; y++) {
-    for (let x = 0; x < 40; x++) {
+  for (let y = 0; y < GRID_SIDE_DIMENSION; y++) {
+    for (let x = 0; x < GRID_SIDE_DIMENSION; x++) {
       allCells.push({ x, y });
     }
   }
@@ -274,8 +275,8 @@ function updateSnakePosition() {
   else if (snake.direction === "down") dy = 1;
 
   const newHead = {
-    x: (snake.head().x + dx + 40) % 40,
-    y: (snake.head().y + dy + 40) % 40,
+    x: (snake.head().x + dx + GRID_SIDE_DIMENSION) % GRID_SIDE_DIMENSION,
+    y: (snake.head().y + dy + GRID_SIDE_DIMENSION) % GRID_SIDE_DIMENSION,
   };
 
   for (let i = snake.body.length - 1; i > 0; i--) {
