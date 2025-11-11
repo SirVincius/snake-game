@@ -1,7 +1,8 @@
 const INITIAL_SPEED = 200;
 const MAX_SPEED = 400;
 const MIN_SPEED = 10;
-const CONSUMMABLE = ["food", "speed-up"];
+const POWER_UP_LIST = ["speed-up", "speed-down"];
+const CONSUMMABLE = ["food", "speed-up", "speed-down"];
 var gameOver = false;
 var gameScore = 0;
 var currentFoodValue = 100;
@@ -127,18 +128,21 @@ function getAllCells() {
   return allCells;
 }
 
-function generatePowerUP() {
-  console.log("Attempting power up generation");
+function generatePowerUP(powerUpName) {
   let rng = Math.random();
-  console.log(rng);
+
   if (rng < 0.75) {
     const availableCells = document.querySelectorAll(
       ".cell:not(.body-segment):not(.head):not(.food)"
     );
     const foodCell =
       availableCells[Math.floor(Math.random() * availableCells.length)];
-    foodCell.classList.add("speed-up");
-    console.log("power-up generated");
+    foodCell.classList.add(powerUpName);
+
+    //Remove the power up after 10 seconds
+    setTimeout(() => {
+      foodCell.classList.remove(powerUpName);
+    }, 10000);
   }
 }
 
@@ -166,7 +170,14 @@ function checkPowerUp() {
   let cellToCheck = getSnakeHeadCellInfos();
   if (cellToCheck.classList.contains("speed-up")) {
     snake.setSpeed(-10);
+  } else if (cellToCheck.classList.contains("speed-down")) {
+    snake.setSpeed(10);
   }
+}
+
+function getRandomPowerUp() {
+  let randomIndex = Math.floor(Math.random * POWER_UP_LIST.length);
+  return POWER_UP_LIST[randomIndex];
 }
 
 function UpdateScore() {
@@ -240,7 +251,7 @@ function move() {
     if (eats()) {
       checkPowerUp();
       consummeFood();
-      generatePowerUP();
+      generatePowerUP(POWER_UP_LIST[1]);
       growSnake();
       generateFood();
     }

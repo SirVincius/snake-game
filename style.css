@@ -15,7 +15,7 @@
 }
 
 .body-segment {
-  background-color: rgb(27, 27, 27);
+  background-color: rgb(67, 67, 67);
 }
 
 .food {
@@ -24,4 +24,8 @@
 
 .speed-up {
   background-color: rgb(0, 163, 0);
+}
+
+.speed-down {
+  background-color: orange;
 }
