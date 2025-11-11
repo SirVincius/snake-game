@@ -1,12 +1,19 @@
-const INITIAL_SPEED = 200;
+const INITIAL_SPEED = 100;
 const MAX_SPEED = 400;
 const MIN_SPEED = 10;
-const POWER_UP_LIST = ["speed-up", "speed-down"];
-const CONSUMMABLE = ["food", "speed-up", "speed-down"];
+const POWER_UP_LIST = ["speed-up", "speed-down", "feast", "invincibility"];
+const CONSUMMABLE = [
+  "food",
+  "speed-up",
+  "speed-down",
+  "feast",
+  "invincibility",
+];
 var gameOver = false;
 var gameScore = 0;
 var currentFoodValue = 100;
 var foodValueBonus = 100;
+var invincible = false;
 
 class Snake {
   constructor(posX, posY) {
@@ -89,10 +96,10 @@ function changeDirection() {
     else if (event.key === "a") snake.direction = "left";
     else if (event.key === "d") snake.direction = "right";
     else if (event.key === "t") {
-      snake.setSpeed(10);
+      snake.setSpeed(5);
       console.log(snake.speed);
     } else if (event.key === "y") {
-      snake.setSpeed(-10);
+      snake.setSpeed(-5);
       console.log(snake.speed);
     }
   });
@@ -108,7 +115,10 @@ function getSnakeHeadCellInfos() {
 }
 
 function checkSnakeCollision() {
-  if (getSnakeHeadCellInfos().classList.contains("body-segment")) {
+  if (
+    getSnakeHeadCellInfos().classList.contains("body-segment") &&
+    invincible == false
+  ) {
     gameOver = true;
   }
 }
@@ -162,6 +172,17 @@ function generateFood() {
   }
 }
 
+function generateMultipleFood(numberOfFoodPiece) {
+  for (let i = 0; i < numberOfFoodPiece; i++) {
+    const availableCells = document.querySelectorAll(
+      ".cell:not(.body-segment):not(.head):not(.food)"
+    );
+    const foodCell =
+      availableCells[Math.floor(Math.random() * availableCells.length)];
+    foodCell.classList.add("food");
+  }
+}
+
 function findFood() {
   return document.querySelector(".food");
 }
@@ -169,14 +190,21 @@ function findFood() {
 function checkPowerUp() {
   let cellToCheck = getSnakeHeadCellInfos();
   if (cellToCheck.classList.contains("speed-up")) {
-    snake.setSpeed(-10);
+    snake.setSpeed(-5);
   } else if (cellToCheck.classList.contains("speed-down")) {
-    snake.setSpeed(10);
+    snake.setSpeed(5);
+  } else if (cellToCheck.classList.contains("feast")) {
+    generateMultipleFood(5);
+  } else if (cellToCheck.classList.contains("invincibility")) {
+    invincible = true;
+    setTimeout(() => {
+      invincible = false;
+    }, 10000);
   }
 }
 
 function getRandomPowerUp() {
-  let randomIndex = Math.floor(Math.random * POWER_UP_LIST.length);
+  let randomIndex = Math.floor(Math.random() * POWER_UP_LIST.length);
   return POWER_UP_LIST[randomIndex];
 }
 
@@ -251,7 +279,7 @@ function move() {
     if (eats()) {
       checkPowerUp();
       consummeFood();
-      generatePowerUP(POWER_UP_LIST[1]);
+      generatePowerUP(getRandomPowerUp());
       growSnake();
       generateFood();
     }

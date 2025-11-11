@@ -2,11 +2,12 @@
   display: grid;
   grid-template-rows: repeat(40, 20px);
   grid-template-columns: repeat(40, 20px);
+  border: 1px solid black;
+  width: fit-content;
 }
 
 .cell {
   background-color: white;
-  border: 1px solid grey;
   box-sizing: border-box;
 }
 
@@ -28,4 +29,12 @@
 
 .speed-down {
   background-color: orange;
+}
+
+.feast {
+  background-color: red;
+}
+
+.invincibility {
+  background-color: gold;
 }
