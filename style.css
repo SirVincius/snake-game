@@ -1,3 +1,7 @@
+#main-grid {
+  background-color: greenyellow;
+}
+
 .grid {
   display: grid;
   grid-template-rows: repeat(40, 20px);
@@ -7,34 +11,32 @@
 }
 
 .cell {
-  background-color: white;
-  box-sizing: border-box;
 }
 
 .head {
-  background-color: black;
+  background: linear-gradient(to bottom, rgb(75, 75, 75), black);
 }
 
 .body-segment {
-  background-color: rgb(67, 67, 67);
+  background: linear-gradient(to bottom, rgb(75, 75, 75), black);
 }
 
 .food {
-  background-color: grey;
+  background: linear-gradient(to bottom, rgb(187, 187, 187), grey);
 }
 
 .speed-up {
-  background-color: rgb(0, 163, 0);
+  background: linear-gradient(to bottom, green, rgb(0, 192, 0));
 }
 
 .speed-down {
-  background-color: orange;
+  background: linear-gradient(to bottom, orange, rgb(192, 125, 0));
 }
 
 .feast {
-  background-color: red;
+  background: linear-gradient(to bottom, red, rgb(196, 0, 0));
 }
 
 .invincibility {
-  background-color: gold;
+  background: linear-gradient(to bottom, gold, rgb(189, 160, 0));
 }
