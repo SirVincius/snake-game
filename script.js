@@ -1,18 +1,27 @@
 const INITIAL_SPEED = 100;
 const MAX_SPEED = 400;
 const MIN_SPEED = 10;
-const POWER_UP_LIST = ["speed-up", "speed-down", "feast", "invincibility"];
+const BASE_FOOD_VALUE_MULTIPLIER = 3;
+const POWER_UP_LIST = [
+  "speed-up",
+  "speed-down",
+  "feast",
+  "invincibility",
+  "bonus-points",
+];
 const CONSUMMABLE = [
   "food",
   "speed-up",
   "speed-down",
   "feast",
   "invincibility",
+  "bonus-points",
 ];
 var gameOver = false;
 var gameScore = 0;
 var currentFoodValue = 100;
 var foodValueBonus = 100;
+var foodValueMultiplier = 1;
 var invincible = false;
 
 class Snake {
@@ -203,6 +212,11 @@ function checkPowerUp() {
     setTimeout(() => {
       invincible = false;
     }, 10000);
+  } else if (cellToCheck.classList.contains("bonus-points")) {
+    foodValueMultiplier = BASE_FOOD_VALUE_MULTIPLIER;
+    setTimeout(() => {
+      foodValueMultiplier = 1;
+    }, 30000);
   }
 }
 
@@ -224,7 +238,7 @@ function reduceBonus() {
 function consummeFood() {
   let food = findGridCell(snake.head().x, snake.head().y);
   if (food.classList.contains("food")) {
-    gameScore += currentFoodValue;
+    gameScore += currentFoodValue * foodValueMultiplier;
     foodValueBonus++;
     currentFoodValue = foodValueBonus;
     UpdateScore();
