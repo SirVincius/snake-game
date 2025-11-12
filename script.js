@@ -2,7 +2,7 @@ const INITIAL_SPEED = 100;
 const MAX_SPEED = 400;
 const MIN_SPEED = 10;
 const BASE_FOOD_VALUE_MULTIPLIER = 3;
-const GRID_SIDE_DIMENSION = 30;
+const GRID_SIDE_DIMENSION = 20;
 const POWER_UP_LIST = [
   "speed-up",
   "speed-down",
@@ -24,6 +24,7 @@ var currentFoodValue = 100;
 var foodValueBonus = 100;
 var foodValueMultiplier = 1;
 var invincible = false;
+var newDirection = null;
 
 class Snake {
   constructor(posX, posY) {
@@ -57,6 +58,12 @@ document.addEventListener("DOMContentLoaded", function () {
   move();
   startScorePenalty();
 });
+
+function setPreviousScore() {
+  document.getElementById(
+    "previous-score"
+  ).innerHTML = `Previous score : ${getBestScore()}`;
+}
 
 function generateGrid() {
   let mainGrid = getMainGrid();
@@ -101,13 +108,13 @@ function getGridCells() {
 
 function changeDirection() {
   document.addEventListener("keydown", (event) => {
-    if (event.key === "w" && snake.direction !== "down") snake.direction = "up";
+    if (event.key === "w" && snake.direction !== "down") newDirection = "up";
     else if (event.key === "s" && snake.direction !== "up")
-      snake.direction = "down";
+      newDirection = "down";
     else if (event.key === "a" && snake.direction !== "right")
       snake.direction = "left";
     else if (event.key === "d" && snake.direction !== "left")
-      snake.direction = "right";
+      newDirection = "right";
     else if (event.key === "t") {
       snake.setSpeed(5);
       console.log(snake.speed);
@@ -285,12 +292,34 @@ function updateSnakePosition() {
   snake.body[0] = newHead;
 }
 
+function getBestScore() {
+  const storedScore = localStorage.getItem("bestSnakeScore");
+  const bestScore = parseInt(storedScore);
+  if (isNaN(bestScore)) {
+    return 0;
+  }
+  return bestScore;
+}
+
+function setBestScore() {
+  const bestScore = getBestScore();
+
+  if (gameScore > bestScore) {
+    localStorage.setItem("bestSnakeScore", gameScore);
+  }
+}
+
 function move() {
   function moveInternal() {
+    if (newDirection) {
+      snake.direction = newDirection;
+      newDirection = null;
+    }
     updateSnakePosition();
     checkSnakeCollision();
 
     if (gameOver) {
+      setBestScore();
       return;
     }
 
