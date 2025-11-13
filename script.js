@@ -51,6 +51,7 @@ class Snake {
 var snake;
 
 document.addEventListener("DOMContentLoaded", function () {
+  setPreviousScore();
   generateGrid();
   snake = createSnake();
   generateFood();
@@ -293,21 +294,24 @@ function updateSnakePosition() {
 }
 
 function getBestScore() {
-  const storedScore = localStorage.getItem("bestSnakeScore");
-  const bestScore = parseInt(storedScore);
-  if (isNaN(bestScore)) {
-    return 0;
-  }
-  return bestScore;
+  const storedScore = localStorage.getItem("bestSnakeScores");
 }
 
-function setBestScore() {
-  const bestScore = getBestScore();
-
-  if (gameScore > bestScore) {
-    localStorage.setItem("bestSnakeScore", gameScore);
-  }
+function addScore() {
+  let bestScores = JSON.parse(getBestScore());
+  bestScores.push(gameScore);
+  return bestScores;
 }
+
+function sortBestScores(bestScores) {
+  bestScores.sort((a, b) => b - a);
+}
+
+function getTenBestScores() {
+  let bestScores = sortBestScores();
+}
+
+function setBestScore() {}
 
 function move() {
   function moveInternal() {
