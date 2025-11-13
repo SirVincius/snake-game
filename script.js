@@ -65,6 +65,7 @@ function reinitializeValues() {
   _mainGrid.innerHTML = "";
   _gameScore.innerHTML = "Score : 0";
   _bestScores.innerHTML = "";
+  _startButton.disabled = true;
 }
 
 var snake;
@@ -78,6 +79,7 @@ _startButton.addEventListener("click", function () {
   changeDirection();
   move();
   startScorePenalty();
+  console.log(snake.speed);
 });
 
 function setPreviousScore() {
@@ -348,6 +350,7 @@ function move() {
 
     if (gameOver) {
       addScore();
+      _startButton.disabled = false;
       return;
     }
 
