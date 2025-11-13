@@ -1,8 +1,8 @@
-const INITIAL_SPEED = 100;
+const INITIAL_SPEED = 150;
 const MAX_SPEED = 400;
 const MIN_SPEED = 10;
 const BASE_FOOD_VALUE_MULTIPLIER = 3;
-const GRID_SIDE_DIMENSION = 20;
+const GRID_SIDE_DIMENSION = 15;
 const POWER_UP_LIST = [
   "speed-up",
   "speed-down",
@@ -26,6 +26,11 @@ var foodValueMultiplier = 1;
 var invincible = false;
 var newDirection = null;
 
+var _mainGrid = document.getElementById("main-grid");
+var _startButton = document.getElementById("start-button");
+var _gameScore = document.getElementById("game-score");
+var _bestScores = document.getElementById("best-scores");
+
 class Snake {
   constructor(posX, posY) {
     this.body = [{ x: posX, y: posY }];
@@ -48,9 +53,24 @@ class Snake {
   }
 }
 
+function reinitializeValues() {
+  gameOver = false;
+  gameScore = 0;
+  currentFoodValue = 100;
+  foodValueBonus = 100;
+  foodValueMultiplier = 1;
+  invincible = false;
+  newDirection = null;
+
+  _mainGrid.innerHTML = "";
+  _gameScore.innerHTML = "Score : 0";
+  _bestScores.innerHTML = "";
+}
+
 var snake;
 
-document.addEventListener("DOMContentLoaded", function () {
+_startButton.addEventListener("click", function () {
+  reinitializeValues();
   printBestScores();
   generateGrid();
   snake = createSnake();
@@ -235,7 +255,7 @@ function getRandomPowerUp() {
 }
 
 function UpdateScore() {
-  document.getElementById("game-score").innerHTML = `Score : ${gameScore}`;
+  _gameScore.innerHTML = `Score : ${gameScore}`;
 }
 
 function reduceBonus() {
@@ -248,7 +268,7 @@ function consummeFood() {
   let food = findGridCell(snake.head().x, snake.head().y);
   if (food.classList.contains("food")) {
     let tempScore = currentFoodValue * foodValueMultiplier;
-    tempScore > 50 ? (gameScore += tempScore) : gamescore + 50;
+    tempScore > 50 ? (gameScore += tempScore) : gameScore + 50;
     foodValueBonus++;
     currentFoodValue = foodValueBonus;
     UpdateScore();
@@ -299,12 +319,11 @@ function getBestScores() {
 }
 
 function printBestScores() {
-  let bestScoresSheet = document.getElementById("best-scores");
   const bestScores = getBestScores();
   bestScores.forEach((score) => {
     let li = document.createElement("li");
     li.innerHTML = score;
-    bestScoresSheet.append(li);
+    _bestScores.append(li);
   });
 }
 
