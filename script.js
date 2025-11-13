@@ -51,7 +51,7 @@ class Snake {
 var snake;
 
 document.addEventListener("DOMContentLoaded", function () {
-  setPreviousScore();
+  printBestScores();
   generateGrid();
   snake = createSnake();
   generateFood();
@@ -247,7 +247,8 @@ function reduceBonus() {
 function consummeFood() {
   let food = findGridCell(snake.head().x, snake.head().y);
   if (food.classList.contains("food")) {
-    gameScore += currentFoodValue * foodValueMultiplier;
+    let tempScore = currentFoodValue * foodValueMultiplier;
+    tempScore > 50 ? (gameScore += tempScore) : gamescore + 50;
     foodValueBonus++;
     currentFoodValue = foodValueBonus;
     UpdateScore();
@@ -293,22 +294,26 @@ function updateSnakePosition() {
   snake.body[0] = newHead;
 }
 
-function getBestScore() {
-  const storedScore = localStorage.getItem("bestSnakeScores");
+function getBestScores() {
+  return JSON.parse(localStorage.getItem("bestScores") || "[]");
+}
+
+function printBestScores() {
+  let bestScoresSheet = document.getElementById("best-scores");
+  const bestScores = getBestScores();
+  bestScores.forEach((score) => {
+    let li = document.createElement("li");
+    li.innerHTML = score;
+    bestScoresSheet.append(li);
+  });
 }
 
 function addScore() {
-  let bestScores = JSON.parse(getBestScore());
+  let bestScores = getBestScores() || [];
   bestScores.push(gameScore);
-  return bestScores;
-}
-
-function sortBestScores(bestScores) {
   bestScores.sort((a, b) => b - a);
-}
-
-function getTenBestScores() {
-  let bestScores = sortBestScores();
+  bestScores.splice(10);
+  localStorage.setItem("bestScores", JSON.stringify(bestScores));
 }
 
 function setBestScore() {}
@@ -323,7 +328,7 @@ function move() {
     checkSnakeCollision();
 
     if (gameOver) {
-      setBestScore();
+      addScore();
       return;
     }
 
