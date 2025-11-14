@@ -58,3 +58,22 @@
 #game-score {
   font-size: 3rem;
 }
+
+.grid-flash-yellow {
+  animation: flash 0.25s steps(1) infinite;
+  animation-duration: 10s; /* entire effect lasts 10s */
+  animation-iteration-count: 40; /* 10s / 0.25s = 40 flashes */
+}
+
+@keyframes flash {
+  /* Early: slow flash */
+  0% {
+    box-shadow: 0 0 3px 3px rgba(255, 255, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 12px 6px rgba(255, 255, 0, 1);
+  }
+  100% {
+    box-shadow: 0 0 3px 3px rgba(255, 255, 0, 0.3);
+  }
+}

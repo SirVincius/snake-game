@@ -4,6 +4,8 @@ const MIN_SPEED = 10;
 const BASE_FOOD_VALUE_MULTIPLIER = 3;
 const GRID_SIDE_DIMENSION = 15;
 const POWER_UP_CHANCE = 0.2;
+const INVINCIBILITY_DURATION = 10000;
+const BONUS_POINT_DURATION = 15000;
 const POWER_UP_LIST = [
   "speed-up",
   "speed-down",
@@ -190,9 +192,7 @@ function getAllCells() {
 }
 
 function generatePowerUP(powerUpName) {
-  let rng = Math.random();
-
-  if (rng < POWER_UP_CHANCE) {
+  setTimeout(() => {
     const availableCells = document.querySelectorAll(
       ".cell:not(.body-segment):not(.head):not(.food)"
     );
@@ -202,9 +202,11 @@ function generatePowerUP(powerUpName) {
 
     //Remove the power up after 10 seconds
     setTimeout(() => {
-      foodCell.classList.remove(powerUpName);
+      if (foodCell.classList.contains(powerUpName)) {
+        foodCell.classList.remove(powerUpName);
+      }
     }, 10000);
-  }
+  }, POWER_UP_CHANCE);
 }
 
 function getNumberOfFoodCells() {
@@ -247,15 +249,20 @@ function checkPowerUp() {
   } else if (cellToCheck.classList.contains("feast")) {
     generateMultipleFood(5);
   } else if (cellToCheck.classList.contains("invincibility")) {
+    if (invincible) {
+      clearTimeout(invincibilityTimer);
+    }
     invincible = true;
-    setTimeout(() => {
+    _mainGrid.classList.add("grid-flash-yellow");
+    invincibilityTimer = setTimeout(() => {
       invincible = false;
-    }, 10000);
+      _mainGrid.classList.remove("grid-flash-yellow");
+    }, INVINCIBILITY_DURATION);
   } else if (cellToCheck.classList.contains("bonus-points")) {
     foodValueMultiplier = BASE_FOOD_VALUE_MULTIPLIER;
     setTimeout(() => {
       foodValueMultiplier = 1;
-    }, 30000);
+    }, BONUS_POINT_DURATION);
   }
 }
 
