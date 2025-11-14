@@ -25,6 +25,7 @@ var foodValueBonus = 100;
 var foodValueMultiplier = 1;
 var invincible = false;
 var newDirection = null;
+var gameStarted = false;
 
 var _mainGrid = document.getElementById("main-grid");
 var _startButton = document.getElementById("start-button");
@@ -70,13 +71,19 @@ function reinitializeValues() {
 
 var snake;
 
+document.addEventListener("DOMContentLoaded", () => {
+  addDirectionEvent();
+});
+
 _startButton.addEventListener("click", function () {
+  if (gameStarted) return;
+  gameStarted = true;
+
   reinitializeValues();
   printBestScores();
   generateGrid();
   snake = createSnake();
   generateFood();
-  changeDirection();
   move();
   startScorePenalty();
   console.log(snake.speed);
@@ -129,7 +136,7 @@ function getGridCells() {
   return document.querySelectorAll(".cell");
 }
 
-function changeDirection() {
+function addDirectionEvent() {
   document.addEventListener("keydown", (event) => {
     if (event.key === "w" && snake.direction !== "down") newDirection = "up";
     else if (event.key === "s" && snake.direction !== "up")
@@ -270,7 +277,7 @@ function consummeFood() {
   let food = findGridCell(snake.head().x, snake.head().y);
   if (food.classList.contains("food")) {
     let tempScore = currentFoodValue * foodValueMultiplier;
-    tempScore > 50 ? (gameScore += tempScore) : gameScore + 50;
+    tempScore > 50 ? (gameScore += tempScore) : (gameScore += 50);
     foodValueBonus++;
     currentFoodValue = foodValueBonus;
     UpdateScore();
@@ -351,6 +358,7 @@ function move() {
     if (gameOver) {
       addScore();
       _startButton.disabled = false;
+      gameStarted = false;
       return;
     }
 
