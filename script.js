@@ -3,6 +3,7 @@ const MAX_SPEED = 400;
 const MIN_SPEED = 10;
 const BASE_FOOD_VALUE_MULTIPLIER = 3;
 const GRID_SIDE_DIMENSION = 15;
+const POWER_UP_CHANCE = 0.2;
 const POWER_UP_LIST = [
   "speed-up",
   "speed-down",
@@ -191,7 +192,7 @@ function getAllCells() {
 function generatePowerUP(powerUpName) {
   let rng = Math.random();
 
-  if (rng < 0.75) {
+  if (rng < POWER_UP_CHANCE) {
     const availableCells = document.querySelectorAll(
       ".cell:not(.body-segment):not(.head):not(.food)"
     );
